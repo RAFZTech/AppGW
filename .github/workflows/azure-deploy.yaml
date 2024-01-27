@@ -1,0 +1,36 @@
+﻿# This is a basic workflow to help you get started with Actions
+
+#on: [push]
+
+name: AzureArmDeploy
+
+jobs:
+
+    deploy:
+      runs-on: ubuntu-latest
+      steps:
+
+      - name: login to azure
+        uses: azure/login@v1
+        with:
+          creds: '${{ secrets.AZURELOGIN_CREDENTIALS }}'
+
+      - name: CheckOut source code
+        uses: actions/checkout@v2
+
+      - name: Deploy Bicep Template
+        working-directory: '${{github.workspace}}/templates/'
+        run: |
+            az account set --subscription d7c583f5-32b9-4a39-a276-ba2ec24e44d5
+            az deployment sub create --location australiaeast --template-file ./rg.bicep
+            az deployment group create --mode Incremental --debug --verbose  \
+             --name dev-cexp-deployment  \
+             --resource-group data-factory-dev-rg  \
+             --template-file ./data-factory.bicep  \
+             --parameters ../params/dev/data-factory.json 
+#            az deployment group create --mode Incremental --debug --verbose  \
+#            --name dev-cexp-deployment  \
+#            --resource-group data-factory-dev-rg  \
+#            --template-file ./data-factory.bicep  \
+#            --parameters ../params/dev/data-factory.json 
+           
