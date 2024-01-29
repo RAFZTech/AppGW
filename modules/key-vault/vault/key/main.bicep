@@ -1,163 +1,268 @@
-metadata name = 'Key Vault Keys'
-metadata description = 'This module deploys a Key Vault Key.'
-metadata owner = 'Azure/module-maintainers'
-
-@description('Conditional. The name of the parent key vault. Required if the template is used in a standalone deployment.')
-param keyVaultName string
-
-@description('Required. The name of the key.')
+﻿@description('The resource name.')
 param name string
 
+@description('The geo-location where the resource lives.')
+param location string
+
 @description('Optional. Resource tags.')
-param tags object?
+@metadata({
+  doc: 'https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/tag-resources?tabs=bicep#arm-templates'
+  example: {
+    tagKey: 'string'
+  }
+})
+param tags object = {}
 
-@description('Optional. Determines whether the object is enabled.')
-param attributesEnabled bool = true
-
-@description('Optional. Expiry date in seconds since 1970-01-01T00:00:00Z. For security reasons, it is recommended to set an expiration date whenever possible.')
-param attributesExp int = -1
-
-@description('Optional. Not before date in seconds since 1970-01-01T00:00:00Z.')
-param attributesNbf int = -1
-
-@description('Optional. The elliptic curve name.')
+@description('Optional. The sku of the key vault.')
 @allowed([
-  'P-256'
-  'P-256K'
-  'P-384'
-  'P-521'
+  'standard'
+  'premium'
 ])
-param curveName string = 'P-256'
+param sku string = 'standard'
 
-@description('Optional. Array of JsonWebKeyOperation.')
-@allowed([
-  'decrypt'
-  'encrypt'
-  'import'
-  'sign'
-  'unwrapKey'
-  'verify'
-  'wrapKey'
-])
-param keyOps array = []
+@description('Optional. Property to specify whether Azure Virtual Machines are permitted to retrieve certificates stored as secrets from the key vault.')
+param enabledForDeployment bool = true
 
-@description('Optional. The key size in bits. For example: 2048, 3072, or 4096 for RSA.')
-param keySize int = -1
+@description('Optional. Property to specify whether Azure Disk Encryption is permitted to retrieve secrets from the vault and unwrap keys.')
+param enabledForDiskEncryption bool = true
 
-@description('Optional. The type of the key.')
-@allowed([
-  'EC'
-  'EC-HSM'
-  'RSA'
-  'RSA-HSM'
-])
-param kty string = 'EC'
+@description('Optional. Property to specify whether Azure Resource Manager is permitted to retrieve secrets from the key vault.')
+param enabledForTemplateDeployment bool = true
 
-@description('Optional. Array of role assignment objects that contain the \'roleDefinitionIdOrName\' and \'principalId\' to define RBAC role assignments on this resource. In the roleDefinitionIdOrName attribute, you can provide either the display name of the role definition, or its fully qualified ID in the following format: \'/providers/Microsoft.Authorization/roleDefinitions/c2f4ef07-c644-48eb-af81-4b1b4947fb11\'.')
-param roleAssignments roleAssignmentType
+@description('Optional. Property specifying whether protection against purge is enabled for this vault.')
+param enablePurgeProtection bool = true
 
-@description('Optional. Key rotation policy properties object.')
-param rotationPolicy object = {}
+@description('Optional. SoftDelete data retention days. It accepts >=7 and <=90.')
+param softDeleteRetentionInDays int = 90
 
-@description('Optional. Enable telemetry via a Globally Unique Identifier (GUID).')
-param enableDefaultTelemetry bool = true
+@description('Optional. Property that controls how data actions are authorized. When true, the key vault will use Role Based Access Control (RBAC) for authorization of data actions, and the access policies specified in vault properties will be ignored.')
+param enableRbacAuthorization bool = true
 
-var builtInRoleNames = {
-  Contributor: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'b24988ac-6180-42a0-ab88-20f7382dd24c')
-  'Key Vault Administrator': subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '00482a5a-887f-4fb3-b363-3b7fe8e74483')
-  'Key Vault Certificates Officer': subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'a4417e6f-fecd-4de8-b567-7b0420556985')
-  'Key Vault Contributor': subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'f25e0fa2-a7c8-4377-a976-54943a77a395')
-  'Key Vault Crypto Officer': subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '14b46e9e-c2b7-41b4-b07b-48a6ebf60603')
-  'Key Vault Crypto Service Encryption User': subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'e147488a-f6f5-4113-8e2d-b22465e65bf6')
-  'Key Vault Crypto User': subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '12338af0-0e69-4776-bea7-57ae8d297424')
-  'Key Vault Reader': subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '21090545-7ca7-4776-b22c-e363652d74d2')
-  'Key Vault Secrets Officer': subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'b86a8fe4-44ce-4948-aee5-eccb2c155cd7')
-  'Key Vault Secrets User': subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '4633458b-17de-408a-b874-0445c86b69e6')
-  Owner: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '8e3af657-a8ff-443c-a75c-2fe8c4bcb635')
-  Reader: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'acdd72a7-3385-48ef-bd42-f606fba81ae7')
-  'Role Based Access Control Administrator (Preview)': subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'f58310d9-a9f6-439a-9e8d-f62e7b41a168')
-  'User Access Administrator': subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '18d7d88d-d35e-4fb5-a5c3-7773c20a72d9')
-}
+@description('Optional. An array of 0 to 1024 identities that have access to the key vault. Only required when enableRbacAuthorization is set to "false".')
+@metadata({
+  applicationId: 'Application ID of the client making request on behalf of a principal.'
+  objectId: 'The object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The object ID must be unique for the list of access policies.'
+  permissions: {
+    certificates: [
+      'String array containing any of:'
+      'all'
+      'backup'
+      'create'
+      'delete'
+      'deleteissuers'
+      'get'
+      'getissuers'
+      'import'
+      'list'
+      'listissuers'
+      'managecontacts'
+      'manageissuers'
+      'purge'
+      'recover'
+      'restore'
+      'setissuers'
+      'update'
+    ]
+    keys: [
+      'String array containing any of:'
+      'all'
+      'backup'
+      'create'
+      'decrypt'
+      'delete'
+      'encrypt'
+      'get'
+      'getrotationpolicy'
+      'import'
+      'list'
+      'purge'
+      'recover'
+      'release'
+      'restore'
+      'rotate'
+      'setrotationpolicy'
+      'sign'
+      'unwrapKey'
+      'update'
+      'verify'
+      'wrapKey'
+    ]
+    secrets: [
+      'String array containing any of:'
+      'all'
+      'backup'
+      'delete'
+      'get'
+      'list'
+      'purge'
+      'recover'
+      'restore'
+      'set'
+    ]
+    storage: [
+      'String array containing any of:'
+      'all'
+      'backup'
+      'delete'
+      'deletesas'
+      'get'
+      'getsas'
+      'list'
+      'listsas'
+      'purge'
+      'recover'
+      'regeneratekey'
+      'restore'
+      'set'
+      'setsas'
+      'update'
+    ]
+  }
+  tenantId: 'The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault.'
+})
+param accessPolicies array = []
 
-/*resource defaultTelemetry 'Microsoft.Resources/deployments@2021-04-01' = if (enableDefaultTelemetry) {
-  name: 'pid-47ed15a6-730a-4827-bcb4-0fd963ffbd82-${uniqueString(deployment().name)}'
-  properties: {
-    mode: 'Incremental'
-    template: {
-      '$schema': 'https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#'
-      contentVersion: '1.0.0.0'
-      resources: []
+@description('Optional. Rules governing the accessibility of the key vault from specific network locations.')
+@metadata({
+  bypass: 'Tells what traffic can bypass network rules. This can be "AzureServices" or "None". If not specified the default is "AzureServices".'
+  defaultAction: 'The default action when no rule from ipRules and from virtualNetworkRules match. This is only used after the bypass property has been evaluated. Accepted values are "Allow" or "Deny".'
+  ipRules: [
+    {
+      value: 'An IPv4 address range in CIDR notation, such as "124.56.78.91" (simple IP address) or "124.56.78.0/24" (all addresses that start with 124.56.78).'
     }
-  }
-}*/
-
-resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
-  name: keyVaultName
-}
-
-resource key 'Microsoft.KeyVault/vaults/keys@2022-07-01' = {
-  name: name
-  parent: keyVault
-  tags: tags
-  properties: {
-    attributes: {
-      enabled: attributesEnabled
-      exp: attributesExp != -1 ? attributesExp : null
-      nbf: attributesNbf != -1 ? attributesNbf : null
+  ]
+  virtualNetworkRules: [
+    {
+      id: 'Full resource id of a vnet subnet.'
+      ignoreMissingVnetServiceEndpoint: 'Property to specify whether NRP will ignore the check if parent subnet has serviceEndpoints configured. Accepted values are "true" or "false".'
     }
-    curveName: curveName
-    keyOps: keyOps
-    keySize: keySize != -1 ? keySize : null
-    kty: kty
-    rotationPolicy: !empty(rotationPolicy) ? rotationPolicy : null
-  }
-}
+  ]
+})
+param networkAcls object = {}
 
-resource key_roleAssignments 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for (roleAssignment, index) in (roleAssignments ?? []): {
-  name: guid(key.id, roleAssignment.principalId, roleAssignment.roleDefinitionIdOrName)
-  properties: {
-    roleDefinitionId: contains(builtInRoleNames, roleAssignment.roleDefinitionIdOrName) ? builtInRoleNames[roleAssignment.roleDefinitionIdOrName] : roleAssignment.roleDefinitionIdOrName
-    principalId: roleAssignment.principalId
-    description: roleAssignment.?description
-    principalType: roleAssignment.?principalType
-    condition: roleAssignment.?condition
-    conditionVersion: !empty(roleAssignment.?condition) ? (roleAssignment.?conditionVersion ?? '2.0') : null // Must only be set if condtion is set
-    delegatedManagedIdentityResourceId: roleAssignment.?delegatedManagedIdentityResourceId
+@description('Optional. Specify the type of resource lock.')
+@allowed([
+  'NotSpecified'
+  'ReadOnly'
+  'CanNotDelete'
+])
+param resourceLock string = 'NotSpecified'
+
+@description('Optional. Enable diagnostic logging.')
+param enableDiagnostics bool = false
+
+@description('Optional. The name of log category groups that will be streamed.')
+@allowed([
+  'audit'
+  'allLogs'
+])
+param diagnosticLogCategoryGroupsToEnable array = [
+  'audit'
+]
+
+@description('Optional. The name of metrics that will be streamed.')
+@allowed([
+  'AllMetrics'
+])
+param diagnosticMetricsToEnable array = [
+  'AllMetrics'
+]
+
+@description('Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely.')
+@minValue(0)
+@maxValue(365)
+param diagnosticLogsRetentionInDays int = 365
+
+@description('Optional. Storage account resource id. Only required if enableDiagnostics is set to true.')
+param diagnosticStorageAccountId string = ''
+
+@description('Optional. Log analytics workspace resource id. Only required if enableDiagnostics is set to true.')
+param diagnosticLogAnalyticsWorkspaceId string = ''
+
+@description('Optional. Event hub authorization rule for the Event Hubs namespace. Only required if enableDiagnostics is set to true.')
+param diagnosticEventHubAuthorizationRuleId string = ''
+
+@description('Optional. Event hub name. Only required if enableDiagnostics is set to true.')
+param diagnosticEventHubName string = ''
+
+var lockName = toLower('${keyvault.name}-${resourceLock}-lck')
+
+var diagnosticsName = toLower('${keyvault.name}-dgs')
+
+var diagnosticsLogs = [for categoryGroup in diagnosticLogCategoryGroupsToEnable: {
+  categoryGroup: categoryGroup
+  enabled: true
+  retentionPolicy: {
+    enabled: true
+    days: diagnosticLogsRetentionInDays
   }
-  scope: key
 }]
 
-@description('The name of the key.')
-output name string = key.name
+var diagnosticsMetrics = [for metric in diagnosticMetricsToEnable: {
+  category: metric
+  timeGrain: null
+  enabled: true
+  retentionPolicy: {
+    enabled: true
+    days: diagnosticLogsRetentionInDays
+  }
+}]
 
-@description('The resource ID of the key.')
-output resourceId string = key.id
+resource keyvault 'Microsoft.KeyVault/vaults@2022-07-01' = {
+  name: name
+  location: location
+  tags: tags
+  properties: {
+    tenantId: subscription().tenantId
+    sku: {
+      family: 'A'
+      name: sku
+    }
+    enabledForDeployment: enabledForDeployment
+    enabledForDiskEncryption: enabledForDiskEncryption
+    enabledForTemplateDeployment: enabledForTemplateDeployment
+    enableSoftDelete: true
+    softDeleteRetentionInDays: softDeleteRetentionInDays
+    enablePurgeProtection: enablePurgeProtection ? true : null
+    enableRbacAuthorization: enableRbacAuthorization
+    publicNetworkAccess: 'Disabled'
+    networkAcls: {
+      bypass: contains(networkAcls, 'bypass') ? networkAcls.bypass : null
+      defaultAction: contains(networkAcls, 'defaultAction') ? networkAcls.defaultAction : null
+      ipRules: contains(networkAcls, 'ipRules') ? networkAcls.ipRules : null
+      virtualNetworkRules: contains(networkAcls, 'virtualNetworkRules') ? networkAcls.virtualNetworkRules : null
+    }
+    accessPolicies: accessPolicies
+  }
+}
 
-@description('The name of the resource group the key was created in.')
-output resourceGroupName string = resourceGroup().name
-// =============== //
-//   Definitions   //
-// =============== //
+resource lock 'Microsoft.Authorization/locks@2017-04-01' = if (resourceLock != 'NotSpecified') {
+  scope: keyvault
+  name: lockName
+  properties: {
+    level: resourceLock
+    notes: (resourceLock == 'CanNotDelete') ? 'Cannot delete resource or child resources.' : 'Cannot modify the resource or child resources.'
+  }
+}
 
-type roleAssignmentType = {
-  @description('Required. The name of the role to assign. If it cannot be found you can specify the role definition ID instead.')
-  roleDefinitionIdOrName: string
+resource diagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if (enableDiagnostics) {
+  scope: keyvault
+  name: diagnosticsName
+  properties: {
+    workspaceId: empty(diagnosticLogAnalyticsWorkspaceId) ? null : diagnosticLogAnalyticsWorkspaceId
+    storageAccountId: empty(diagnosticStorageAccountId) ? null : diagnosticStorageAccountId
+    eventHubAuthorizationRuleId: empty(diagnosticEventHubAuthorizationRuleId) ? null : diagnosticEventHubAuthorizationRuleId
+    eventHubName: empty(diagnosticEventHubName) ? null : diagnosticEventHubName
+    logs: diagnosticsLogs
+    metrics: diagnosticsMetrics
+  }
+}
 
-  @description('Required. The principal ID of the principal (user/group/identity) to assign the role to.')
-  principalId: string
+@description('The name of the deployed key vault.')
+output name string = keyvault.name
 
-  @description('Optional. The principal type of the assigned principal ID.')
-  principalType: ('ServicePrincipal' | 'Group' | 'User' | 'ForeignGroup' | 'Device')?
+@description('The resource ID of the deployed key vault.')
+output resourceId string = keyvault.id
 
-  @description('Optional. The description of the role assignment.')
-  description: string?
-
-  @description('Optional. The conditions on the role assignment. This limits the resources it can be assigned to. e.g.: @Resource[Microsoft.Storage/storageAccounts/blobServices/containers:ContainerName] StringEqualsIgnoreCase "foo_storage_container"')
-  condition: string?
-
-  @description('Optional. Version of the condition.')
-  conditionVersion: '2.0'?
-
-  @description('Optional. The Resource Id of the delegated managed identity resource.')
-  delegatedManagedIdentityResourceId: string?
-}[]?
+@description('The uri of the deployed key vault.')
+output uri string = keyvault.properties.vaultUri
