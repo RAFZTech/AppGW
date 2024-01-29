@@ -24,12 +24,18 @@ jobs:
             az account set --subscription d7c583f5-32b9-4a39-a276-ba2ec24e44d5            
             az deployment group create --mode Incremental --debug --verbose  \
              --name np-appgw-deployment  \
-             --resource-group appgw-rg  \
-             --template-file ../templates/main.bicep  \
-             --parameters ../environments/non-prod/non-prod.parameters.jsonc 
+             --resource-group networkrg01  \
+             --template-file ../templates/network.bicep  \
+             --parameters ../environments/non-prod/network.parameters.jsonc
+#           az account set --subscription d7c583f5-32b9-4a39-a276-ba2ec24e44d5            
+#           az deployment group create --mode Incremental --debug --verbose  \
+#            --name np-appgw-deployment  \
+#            --resource-group appgw-rg  \
+#            --template-file ../templates/main.bicep  \
+#            --parameters ../environments/non-prod/non-prod.parameters.jsonc 
 #            az deployment group create --mode Incremental --debug --verbose  \
 #            --name dev-cexp-deployment  \
 #            --resource-group data-factory-dev-rg  \
 #            --template-file ./data-factory.bicep  \
 #            --parameters ../params/dev/data-factory.json
-           
+

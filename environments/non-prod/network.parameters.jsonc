@@ -1,0 +1,134 @@
+﻿{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "value": "australiaeast"
+        },
+        "Vnet": {
+            "value": "vnet04"
+        },
+        "appgwSnet": {
+            "value": "my-app-gw-snet"
+        },
+        "peSnet": {
+            "value": "pep-snet"
+        },
+        "appgwSnetCidr": {
+            "value": "10.0.5.0/25"
+        },
+        "peSnetCidr": {
+            "value": "10.0.5.128/25"
+        },
+        "appgwNsg": {
+            "value": "appgw-nsg-01"
+        },
+        "peNsg": {
+            "value": "pe-nsg-01"
+        },
+        "appgwRt": {
+            "value": "app-gw-rt-01"
+        },
+        "peRt": {
+            "value": "pe-rt-01"
+        },
+        "appgwRules": {
+            "value": [
+                {
+                    "id": "Std-DenyAll",
+                    "name": "Std-DenyAll",
+                    "properties": {
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "sourceAddressPrefix": "*",
+                        "destinationPortRange": "*",
+                        "destinationAddressPrefix": "VirtualNetwork",
+                        "access": "Deny",
+                        "priority": "4052",
+                        "direction": "Inbound"
+                    }
+                }
+            ]
+        },
+        "peRules": {
+            "value": [
+                {
+                    "id": "Std-DenyAll",
+                    "name": "Std-DenyAll",
+                    "properties": {
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "sourceAddressPrefix": "*",
+                        "destinationPortRange": "*",
+                        "destinationAddressPrefix": "VirtualNetwork",
+                        "access": "Deny",
+                        "priority": "4052",
+                        "direction": "Inbound"
+                    }
+                },
+                {
+                    "id": "Std-AllowIcmp",
+                    "name": "Std-AllowIcmp",
+                    "properties": {
+                        "protocol": "Icmp",
+                        "sourcePortRange": "*",
+                        "sourceAddressPrefixes": [
+                            "10.0.0.0/8",
+                            "172.16.0.0/12",
+                            "192.168.0.0/16"
+                        ],
+                        "destinationPortRange": "3389",
+                        "destinationAddressPrefix": "VirtualNetwork",
+                        "access": "Allow",
+                        "priority": "4000",
+                        "direction": "Inbound"
+                    }
+                }
+            ]
+        },
+        "appgwRoutes": {
+            "value": [
+                {
+                    "name": "DefaultRoute",
+                    "properties": {
+                        "addressPrefix": "0.0.0.0/0",
+                        "nextHopType": "VirtualAppliance",
+                        "nextHopIpAddress": "10.104.0.4",
+                        "hasBgpOverride": false
+                    }
+                },
+                {
+                    "name": "DNSInboundEndpointSnetRt",
+                    "properties": {
+                        "addressPrefix": "10.104.0.128/26",
+                        "nextHopType": "VirtualAppliance",
+                        "nextHopIpAddress": "10.104.0.4",
+                        "hasBgpOverride": false
+                    }
+                }
+            ]
+        },
+        "peRoutes": {
+            "value": [
+                {
+                    "name": "DefaultRoute",
+                    "properties": {
+                        "addressPrefix": "0.0.0.0/0",
+                        "nextHopType": "VirtualAppliance",
+                        "nextHopIpAddress": "10.104.0.4",
+                        "hasBgpOverride": false
+                    }
+                },
+                {
+                    "name": "DNSInboundEndpointSnetRt",
+                    "properties": {
+                        "addressPrefix": "10.104.0.128/26",
+                        "nextHopType": "VirtualAppliance",
+                        "nextHopIpAddress": "10.104.0.4",
+                        "hasBgpOverride": false
+                    }
+                }
+            ]
+        }
+    }
+}

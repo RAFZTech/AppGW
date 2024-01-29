@@ -4,7 +4,7 @@ param pesubnet string
 param kvpepName string
 param kvdnszone string
 
-module keyvault '../modules/key-vault/vault/key-vault.bicep' = {
+module keyvault '../modules/key-vault/vaults/main.bicep' = {
   name: keyvaultName
   params: {
     location: location
@@ -12,7 +12,7 @@ module keyvault '../modules/key-vault/vault/key-vault.bicep' = {
   }
 }
 
-module keyvaultpep '../modules/network/private-endpoint/pe.bicep' = {
+module keyvaultpep '../modules/network/private-endpoint/main.bicep' = {
   dependsOn: [
     keyvault
   ]
