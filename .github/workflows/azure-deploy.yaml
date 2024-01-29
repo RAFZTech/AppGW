@@ -26,7 +26,7 @@ jobs:
              --name np-appgw-deployment  \
              --resource-group appgw-rg  \
              --template-file ../templates/main.bicep  \
-             --parameters ../environments/non-prod/non-prod.json 
+             --parameters ../environments/non-prod/non-prod.parameters.json 
 #            az deployment group create --mode Incremental --debug --verbose  \
 #            --name dev-cexp-deployment  \
 #            --resource-group data-factory-dev-rg  \
