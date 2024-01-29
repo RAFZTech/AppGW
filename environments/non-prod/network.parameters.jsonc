@@ -35,7 +35,6 @@
         "appgwRules": {
             "value": [
                 {
-                    "id": "Std-DenyAll",
                     "name": "Std-DenyAll",
                     "properties": {
                         "protocol": "*",
@@ -53,7 +52,6 @@
         "peRules": {
             "value": [
                 {
-                    "id": "Std-DenyAll",
                     "name": "Std-DenyAll",
                     "properties": {
                         "protocol": "*",
@@ -67,7 +65,6 @@
                     }
                 },
                 {
-                    "id": "Std-AllowIcmp",
                     "name": "Std-AllowIcmp",
                     "properties": {
                         "protocol": "Icmp",
