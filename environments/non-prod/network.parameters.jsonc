@@ -15,10 +15,10 @@
             "value": "pep-snet"
         },
         "appgwSnetCidr": {
-            "value": "10.0.5.0/25"
+            "value": "10.0.6.0/24"
         },
         "peSnetCidr": {
-            "value": "10.0.5.128/25"
+            "value": "10.0.7.0/24"
         },
         "appgwNsg": {
             "value": "appgw-nsg-01"
@@ -110,30 +110,22 @@
             ]
         },
         "peRoutes": {
-            "value": [
-                {
-                    "routes": [
-                        {
-                            "name": "DefaultRoute",
-                            "properties": {
-                                "addressPrefix": "0.0.0.0/0",
-                                "nextHopType": "VirtualAppliance",
-                                "nextHopIpAddress": "10.104.0.4",
-                                "hasBgpOverride": false
-                            }
-                        },
-                        {
-                            "name": "DNSInboundEndpointSnetRt",
-                            "properties": {
-                                "addressPrefix": "10.104.0.128/26",
-                                "nextHopType": "VirtualAppliance",
-                                "nextHopIpAddress": "10.104.0.4",
-                                "hasBgpOverride": false
-                            }
-                        }
-                    ]
-                }
-            ]
+            "name": "DefaultRoute",
+            "properties": {
+                "addressPrefix": "0.0.0.0/0",
+                "nextHopType": "VirtualAppliance",
+                "nextHopIpAddress": "10.104.0.4",
+                "hasBgpOverride": false
+            }
+        },
+        {
+            "name": "DNSInboundEndpointSnetRt",
+            "properties": {
+                "addressPrefix": "10.104.0.128/26",
+                "nextHopType": "VirtualAppliance",
+                "nextHopIpAddress": "10.104.0.4",
+                "hasBgpOverride": false
+            }
         }
     }
 }
