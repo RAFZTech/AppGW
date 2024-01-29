@@ -22,15 +22,15 @@ jobs:
         working-directory: '${{github.workspace}}/templates/'
         run: |
             az account set --subscription d7c583f5-32b9-4a39-a276-ba2ec24e44d5
-            az deployment sub create --location australiaeast --template-file ./rg.bicep
+            az deployment sub create --location australiaeast --resource-group appgw-rg
             az deployment group create --mode Incremental --debug --verbose  \
-             --name dev-cexp-deployment  \
-             --resource-group data-factory-dev-rg  \
-             --template-file ./data-factory.bicep  \
-             --parameters ../params/dev/data-factory.json 
+             --name np-appgw-deployment  \
+             --resource-group appgw-rg  \
+             --template-file ../templates/main.bicep  \
+             --parameters ../environments/non-prod/non-prod.json 
 #            az deployment group create --mode Incremental --debug --verbose  \
 #            --name dev-cexp-deployment  \
 #            --resource-group data-factory-dev-rg  \
 #            --template-file ./data-factory.bicep  \
-#            --parameters ../params/dev/data-factory.json 
+#            --parameters ../params/dev/data-factory.json
            
