@@ -86,8 +86,6 @@
         "appgwRoutes": {
             "value": [
                 {
-                    "vnetName": "vnet04",
-                    "subnetName": "my-app-gw-snet",
                     "routes": [
                         {
                             "name": "DefaultRoute",
@@ -114,8 +112,6 @@
         "peRoutes": {
             "value": [
                 {
-                    "vnetName": "vnet04",
-                    "subnetName": "pep-snet",
                     "routes": [
                         {
                             "name": "DefaultRoute",
