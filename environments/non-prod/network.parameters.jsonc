@@ -44,7 +44,7 @@
                         "destinationPortRange": "*",
                         "destinationAddressPrefix": "VirtualNetwork",
                         "access": "Deny",
-                        "priority": "4052",
+                        "priority": 4052,
                         "direction": "Inbound"
                     }
                 }
@@ -62,7 +62,7 @@
                         "destinationPortRange": "*",
                         "destinationAddressPrefix": "VirtualNetwork",
                         "access": "Deny",
-                        "priority": "4052",
+                        "priority": 4052,
                         "direction": "Inbound"
                     }
                 },
@@ -80,7 +80,7 @@
                         "destinationPortRange": "3389",
                         "destinationAddressPrefix": "VirtualNetwork",
                         "access": "Allow",
-                        "priority": "4000",
+                        "priority": 4000,
                         "direction": "Inbound"
                     }
                 }
