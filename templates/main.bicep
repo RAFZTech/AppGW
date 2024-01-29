@@ -4,12 +4,11 @@ param pesubnet string
 param kvpepName string
 param kvdnszone string
 
-module keyvault '../modules/key-vault/vault/main.bicep' = {
+module keyvault '../modules/key-vault/vault/key-vault.bicep' = {
   name: keyvaultName
   params: {
     location: location
     name: keyvaultName
-    publicNetworkAccess: 'Disabled'
   }
 }
 
