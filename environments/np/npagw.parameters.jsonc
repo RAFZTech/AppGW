@@ -51,7 +51,7 @@
         "autoScaleMaxCapacity": {
             "value": "2"
         },
-        "zones": {
+        "Zones": {
             "value": [
                 "1"
             ]
