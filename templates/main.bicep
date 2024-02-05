@@ -8,7 +8,7 @@ param agwname string
 param agwtags object
 param tier string
 param sku string
-param availabilityZones int
+param Zones array
 param autoScaleMinCapacity int
 param autoScaleMaxCapacity int
 param publicIpAddressName string
@@ -54,7 +54,7 @@ module appgw '../modules/network/application-gateway/main.bicep' = {
     location: location
     tier: tier
     sku: sku
-    availabilityZones: availabilityZones
+    availabilityZones: Zones
     autoScaleMinCapacity: autoScaleMinCapacity
     autoScaleMaxCapacity: autoScaleMaxCapacity
     frontEndPorts: frontEndPorts

@@ -51,8 +51,10 @@
         "autoScaleMaxCapacity": {
             "value": "2"
         },
-        "availabilityZones": {
-            "value": 1
+        "zones": {
+            "value": [
+                "1"
+            ]
         },
         "publicIpAddressName": {
             "value": "agwpublicipaddrexx"
