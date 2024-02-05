@@ -24,9 +24,9 @@ jobs:
             az account set --subscription d7c583f5-32b9-4a39-a276-ba2ec24e44d5            
             az deployment group create --mode Incremental --debug --verbose  \
              --name np-appgw-deployment  \
-             --resource-group networkrg01  \
-             --template-file ../templates/network.bicep  \
-             --parameters ../environments/non-prod/network.parameters.jsonc
+             --resource-group mytestrg  \
+             --template-file ../templates/main.bicep  \
+             --parameters ../environments/np/npagw.parameters.jsonc
 #           az account set --subscription d7c583f5-32b9-4a39-a276-ba2ec24e44d5            
 #           az deployment group create --mode Incremental --debug --verbose  \
 #            --name np-appgw-deployment  \
