@@ -1,0 +1,214 @@
+﻿{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "value": "australiaeast"
+        },
+        "keyvaultName": {
+            "value": "np-appgw-kv"
+        },
+        "kvpepName": {
+            "value": "np-appgw-kv-pep"
+        },
+        "kvdnszone": {
+            "value": "/subscriptions/d7c583f5-32b9-4a39-a276-ba2ec24e44d5/resourceGroups/networkrg01/providers/Microsoft.Network/privateDnsZones/privatelink.vault.azure.net"
+        },
+        "pesubnet": {
+            "value": "/subscriptions/d7c583f5-32b9-4a39-a276-ba2ec24e44d5/resourceGroups/networkrg01/providers/Microsoft.Network/virtualNetworks/vnet01/subnets/service-snet"
+        },
+        "agwname": {
+            "value": "agwtestforwork"
+        },
+        "agwtags": {
+            "value": {
+                "Cost Centre": "0000",
+                "IT Owner": "TagMe",
+                "Environment": "NP",
+                "Technical Owner": "TagMe",
+                "Data Classification": "TagMe",
+                "App Group Name": "Shared App Gateway",
+                "Maintenance Window": "Outside business and batch hours.  At the moment this is Saturday night into Sunday morning",
+                "Availability": "99%",
+                "Review Date": "TagMe",
+                "Some Randon Tag": "TagMe",
+                "ManagedBy": "TagMe",
+                "Application Support Team Email": "rizzahmad@outlook.com"
+            }
+        },
+        "tier": {
+            "value": "Standard_v2"
+        },
+        "sku": {
+            "value": "standard"
+        },
+        "sslCertificates": {
+            "value": [
+                {
+                    "name": "App-Gateway-APIM-SSL-Decryption-Certificate",
+                    "properties": {
+                        "keyVaultSecretId": "https://pft01-edc-dib-cloud-kv01.vault.azure.net:443/secrets/App-Gateway-APIM-SSL-Decryption-Certificate/"
+                    }
+                }
+            ]
+        },
+        "trustedRootCertificates": {
+            "value": []
+        },
+        "frontendPorts": {
+            "value": [
+                {
+                    "name": "port_443",
+                    "properties": {
+                        "port": 443
+                    }
+                },
+                {
+                    "name": "port_80",
+                    "properties": {
+                        "port": 80
+                    }
+                }
+            ]
+        },
+        "backendAddressPools": {
+            "value": [
+                {
+                    "name": "firewall-ingress",
+                    "properties": {
+                        "backendAddresses": []
+                    }
+                }
+            ]
+        },
+        "backendHttpSettings": {
+            "value": [
+                {
+                    "name": "api.pft01.dib.boqdev.com.au-backend-settings",
+                    "properties": {
+                        "Port": 10543,
+                        "Protocol": "Https",
+                        "cookieBasedAffinity": "Disabled",
+                        "hostName": "api.pft01.dib.boqdev.com.au",
+                        "pickHostNameFromBackendAddress": false,
+                        "requestTimeout": 120,
+                        "probe": {
+                            "id": "/subscriptions/43a448ab-c2b2-4fc8-9c27-ed4e9fd05a79/resourceGroups/pft01-edc-dib-app-gateway-rg01/providers/Microsoft.Network/applicationGateways/pft01-edc-dib-agw/probes/apim-probe"
+                        },
+                        "trustedRootCertificates": []
+                    }
+                },
+                {
+                    "name": "api.pft01.meb.boqdev.com.au-backend-settings",
+                    "properties": {
+                        "Port": 10543,
+                        "Protocol": "Https",
+                        "cookieBasedAffinity": "Disabled",
+                        "hostName": "api.pft01.meb.boqdev.com.au",
+                        "pickHostNameFromBackendAddress": false,
+                        "requestTimeout": 120,
+                        "probe": {
+                            "id": "/subscriptions/43a448ab-c2b2-4fc8-9c27-ed4e9fd05a79/resourceGroups/pft01-edc-dib-app-gateway-rg01/providers/Microsoft.Network/applicationGateways/pft01-edc-dib-agw/probes/apim-probe"
+                        },
+                        "trustedRootCertificates": []
+                    }
+                }
+            ]
+        },
+        "httpListeners": {
+            "value": [
+                {
+                    "name": "api.pft01.dib.boqdev.com.au-listener",
+                    "properties": {
+                        "frontendIPConfiguration": {
+                            "id": "/subscriptions/43a448ab-c2b2-4fc8-9c27-ed4e9fd05a79/resourceGroups/pft01-edc-dib-app-gateway-rg01/providers/Microsoft.Network/applicationGateways/pft01-edc-dib-agw/frontendIPConfigurations/appGwPublicFrontendIp"
+                        },
+                        "frontendPort": {
+                            "id": "/subscriptions/43a448ab-c2b2-4fc8-9c27-ed4e9fd05a79/resourceGroups/pft01-edc-dib-app-gateway-rg01/providers/Microsoft.Network/applicationGateways/pft01-edc-dib-agw/frontendPorts/port_443"
+                        },
+                        "protocol": "Https",
+                        "sslCertificate": {
+                            "id": "/subscriptions/43a448ab-c2b2-4fc8-9c27-ed4e9fd05a79/resourceGroups/pft01-edc-dib-app-gateway-rg01/providers/Microsoft.Network/applicationGateways/pft01-edc-dib-agw/sslCertificates/App-Gateway-APIM-SSL-Decryption-Certificate"
+                        },
+                        "hostName": "api.pft01.dib.boqdev.com.au",
+                        "requireServerNameIndication": true
+                    }
+                },
+                {
+                    "name": "api.pft01.meb.boqdev.com.au-listener",
+                    "properties": {
+                        "frontendIPConfiguration": {
+                            "id": "/subscriptions/43a448ab-c2b2-4fc8-9c27-ed4e9fd05a79/resourceGroups/pft01-edc-dib-app-gateway-rg01/providers/Microsoft.Network/applicationGateways/pft01-edc-dib-agw/frontendIPConfigurations/appGwPublicFrontendIp"
+                        },
+                        "frontendPort": {
+                            "id": "/subscriptions/43a448ab-c2b2-4fc8-9c27-ed4e9fd05a79/resourceGroups/pft01-edc-dib-app-gateway-rg01/providers/Microsoft.Network/applicationGateways/pft01-edc-dib-agw/frontendPorts/port_443"
+                        },
+                        "protocol": "Https",
+                        "sslCertificate": {
+                            "id": "/subscriptions/43a448ab-c2b2-4fc8-9c27-ed4e9fd05a79/resourceGroups/pft01-edc-dib-app-gateway-rg01/providers/Microsoft.Network/applicationGateways/pft01-edc-dib-agw/sslCertificates/App-Gateway-APIM-SSL-Decryption-Certificate"
+                        },
+                        "hostName": "api.pft01.meb.boqdev.com.au",
+                        "requireServerNameIndication": true
+                    }
+                }
+            ]
+        },
+        "requestRoutingRules": {
+            "value": [
+                {
+                    "Name": "api.pft01.dib.boqdev.com.au-rule",
+                    "properties": {
+                        "RuleType": "Basic",
+                        "httpListener": {
+                            "id": "/subscriptions/43a448ab-c2b2-4fc8-9c27-ed4e9fd05a79/resourceGroups/pft01-edc-dib-app-gateway-rg01/providers/Microsoft.Network/applicationGateways/pft01-edc-dib-agw/httpListeners/api.pft01.dib.boqdev.com.au-listener"
+                        },
+                        "priority": 200,
+                        "backendAddressPool": {
+                            "id": "/subscriptions/43a448ab-c2b2-4fc8-9c27-ed4e9fd05a79/resourceGroups/pft01-edc-dib-app-gateway-rg01/providers/Microsoft.Network/applicationGateways/pft01-edc-dib-agw/backendAddressPools/firewall-ingress"
+                        },
+                        "backendHttpSettings": {
+                            "id": "/subscriptions/43a448ab-c2b2-4fc8-9c27-ed4e9fd05a79/resourceGroups/pft01-edc-dib-app-gateway-rg01/providers/Microsoft.Network/applicationGateways/pft01-edc-dib-agw/backendHttpSettingsCollection/api.pft01.dib.boqdev.com.au-backend-settings"
+                        }
+                    }
+                },
+                {
+                    "Name": "api.pft01.meb.boqdev.com.au-rule",
+                    "properties": {
+                        "RuleType": "Basic",
+                        "httpListener": {
+                            "id": "/subscriptions/43a448ab-c2b2-4fc8-9c27-ed4e9fd05a79/resourceGroups/pft01-edc-dib-app-gateway-rg01/providers/Microsoft.Network/applicationGateways/pft01-edc-dib-agw/httpListeners/api.pft01.meb.boqdev.com.au-listener"
+                        },
+                        "priority": 300,
+                        "backendAddressPool": {
+                            "id": "/subscriptions/43a448ab-c2b2-4fc8-9c27-ed4e9fd05a79/resourceGroups/pft01-edc-dib-app-gateway-rg01/providers/Microsoft.Network/applicationGateways/pft01-edc-dib-agw/backendAddressPools/firewall-ingress"
+                        },
+                        "backendHttpSettings": {
+                            "id": "/subscriptions/43a448ab-c2b2-4fc8-9c27-ed4e9fd05a79/resourceGroups/pft01-edc-dib-app-gateway-rg01/providers/Microsoft.Network/applicationGateways/pft01-edc-dib-agw/backendHttpSettingsCollection/api.pft01.meb.boqdev.com.au-backend-settings"
+                        }
+                    }
+                }
+            ]
+        },
+        "probes": {
+            "value": [
+                {
+                    "name": "apim-probe",
+                    "properties": {
+                        "protocol": "Https",
+                        "path": "/status-0123456789abcdef",
+                        "interval": 30,
+                        "timeout": 30,
+                        "unhealthyThreshold": 3,
+                        "pickHostNameFromBackendHttpSettings": true,
+                        "minServers": 0,
+                        "match": {
+                            "statusCodes": [
+                                "200-399"
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}
