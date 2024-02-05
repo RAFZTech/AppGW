@@ -52,7 +52,7 @@
             "value": "2"
         },
         "availabilityZones": {
-            "value": "1"
+            "value": 1
         },
         "publicIpAddressName": {
             "value": "agwpublicipaddrexx"
