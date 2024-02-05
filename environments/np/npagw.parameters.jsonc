@@ -46,10 +46,10 @@
             "value": "standard"
         },
         "autoScaleMinCapacity": {
-            "value": "1"
+            "value": 1
         },
         "autoScaleMaxCapacity": {
-            "value": "2"
+            "value": 2
         },
         "Zones": {
             "value": [
