@@ -8,7 +8,7 @@ param agwname string
 param agwtags object
 param tier string
 param sku string
-param availabilityZones array
+param availabilityZones int
 param autoScaleMinCapacity int
 param autoScaleMaxCapacity int
 param publicIpAddressName string
