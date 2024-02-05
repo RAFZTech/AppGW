@@ -20,6 +20,9 @@
         "agwname": {
             "value": "agwtestforwork"
         },
+        "subnetResourceId": {
+            "value": "/subscriptions/d7c583f5-32b9-4a39-a276-ba2ec24e44d5/resourceGroups/networkrg01/providers/Microsoft.Network/virtualNetworks/vnet03/subnets/appgw"
+        },
         "agwtags": {
             "value": {
                 "Cost Centre": "0000",
