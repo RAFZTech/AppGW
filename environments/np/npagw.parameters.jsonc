@@ -43,7 +43,7 @@
             "value": "Standard_v2"
         },
         "sku": {
-            "value": "standard"
+            "value": "Standard_v2"
         },
         "autoScaleMinCapacity": {
             "value": 1
