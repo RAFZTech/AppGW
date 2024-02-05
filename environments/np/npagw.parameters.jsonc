@@ -45,6 +45,18 @@
         "sku": {
             "value": "standard"
         },
+        "autoScaleMinCapacity": {
+            "value": "1"
+        },
+        "autoScaleMaxCapacity": {
+            "value": "2"
+        },
+        "availabilityZones": {
+            "value": "1"
+        },
+        "publicIpAddressName": {
+            "value": "agwpublicipaddrexx"
+        },
         "sslCertificates": {
             "value": [
                 {
@@ -58,7 +70,7 @@
         "trustedRootCertificates": {
             "value": []
         },
-        "frontendPorts": {
+        "frontEndPorts": {
             "value": [
                 {
                     "name": "port_443",
