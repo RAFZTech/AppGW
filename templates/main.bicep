@@ -11,10 +11,11 @@ param sku string
 param Zones array
 param autoScaleMinCapacity int
 param autoScaleMaxCapacity int
-param publicIpAddressName string
+
+param frontendIPConfigurations array
 param subnetResourceId string
 
-param sslCertificates array
+//param sslCertificates array
 param trustedRootCertificates array
 param httpListeners array
 param backendAddressPools array
@@ -46,27 +47,50 @@ module keyvaultpep '../modules/network/private-endpoints/main.bicep' = {
   }
 }
 
+resource appgWUser 'Microsoft.ManagedIdentity/userAssignedIdentities@2022-01-31-preview' = {
+  name: '${agwname}-id'
+  location: location
+}
+
 module appgw '../modules/network/application-gateway/main.bicep' = {
   name: agwname
   params: {
     name: agwname
     tags: agwtags
     location: location
+    identity: appgWUser.id
     tier: tier
     sku: sku
     availabilityZones: Zones
     autoScaleMinCapacity: autoScaleMinCapacity
     autoScaleMaxCapacity: autoScaleMaxCapacity
+    frontendIPConfigurations: frontendIPConfigurations
     frontEndPorts: frontEndPorts
     httpListeners: httpListeners
     backendAddressPools: backendAddressPools
     backendHttpSettings: backendHttpSettings
     requestRoutingRules: requestRoutingRules
-    publicIpAddressName: publicIpAddressName
     subnetResourceId: subnetResourceId
     probes: probes
-    sslCertificates: sslCertificates
-    trustedRootCertificates: trustedRootCertificates
+    sslCertificates: [
+      {
+        name: 'Shared-App-Gateway-Certificate'
+        properties: {
+          keyVaultSecretId: '${keyvault.outputs.uri}/secrets/Shared-App-Gateway-Certificate/'
+          // 'https://pft01-edc-dib-cloud-kv01.vault.azure.net:443/secrets/App-Gateway-APIM-SSL-Decryption-Certificate/'
+        }
+      }
+    ]
+    //sslCertificates: sslCertificates
+    //sslCertificates: []
+    // sslCertificates: [{
+    //     name: 'Name of the SSL certificate that is unique within an application gateway.'
+    //     keyVaultResourceId: keyvault.outputs.resourceId
+    //     secretName: 'Key vault secret name.'
+    //   }]
+
+    // trustedRootCertificates: trustedRootCertificates
+    trustedRootCertificates: []
   }
 
 }
