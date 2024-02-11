@@ -22,6 +22,8 @@ param tags object = {}
 ])
 param tier string
 
+param identity string
+
 @description('Name of an application gateway SKU.')
 @allowed([
   'Standard_Large'
@@ -47,11 +49,13 @@ param autoScaleMaxCapacity int = 10
 @description('Optional. Whether HTTP2 is enabled on the application gateway resource.')
 param http2Enabled bool = true
 
-@description('Name of the application gateway public IP address.')
-param publicIpAddressName string
+//@description('Name of the application gateway public IP address.')
+//param publicIpAddressName string
 
 @description('Resource ID of the application gateway subnet.')
 param subnetResourceId string
+
+param frontendIPConfigurations array
 
 @description('Optional. SSL certificates of the application gateway resource.')
 @metadata({
@@ -181,11 +185,11 @@ param frontEndPorts array
 })
 param probes array = []
 
-@description('Optional. Enables system assigned managed identity on the resource.')
-param systemAssignedIdentity bool = false
+//@description('Optional. Enables system assigned managed identity on the resource.')
+//param systemAssignedIdentity bool = false
 
-@description('Optional. The ID(s) to assign to the resource.')
-param userAssignedIdentities object = {}
+//@description('Optional. The ID(s) to assign to the resource.')
+//param userAssignedIdentities object = {}
 
 @description('Optional. Web application firewall configuration.')
 @metadata({
@@ -280,12 +284,12 @@ var publicIpDiagnosticsName = toLower('${publicIpAddress.name}-dgs')
 
 var applicationGatewayDiagnosticsName = toLower('${applicationGateway.name}-dgs')
 
-var identityType = systemAssignedIdentity ? (!empty(userAssignedIdentities) ? 'SystemAssigned,UserAssigned' : 'SystemAssigned') : (!empty(userAssignedIdentities) ? 'UserAssigned' : 'None')
+//var identityType = systemAssignedIdentity ? (!empty(userAssignedIdentities) ? 'SystemAssigned,UserAssigned' : 'SystemAssigned') : (!empty(userAssignedIdentities) ? 'UserAssigned' : 'None')
 
-var identity = identityType != 'None' ? {
+/*var identity = identityType != 'None' ? {
   type: identityType
   userAssignedIdentities: !empty(userAssignedIdentities) ? userAssignedIdentities : null
-} : null
+} : null*/
 
 var diagnosticsLogs = [for categoryGroup in diagnosticLogCategoryGroupsToEnable: {
   categoryGroup: categoryGroup
@@ -310,8 +314,12 @@ var gatewayIpConfigurationName = 'appGatewayIpConfig'
 
 var frontendIpConfigurationName = 'appGwPublicFrontendIp'
 
+// frontend private IP
+var frontendPrivateIpConfigurationName = 'appGwPrivateFrontendIp'
+
 resource publicIpAddress 'Microsoft.Network/publicIPAddresses@2022-01-01' = {
-  name: publicIpAddressName
+  //name: publicIpAddressName
+  name: '${name}-pip01'
   location: location
   tags: tags
   sku: {
@@ -340,7 +348,12 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-03-01' =
   name: name
   location: location
   zones: availabilityZones
-  identity: identity
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${identity}': {}
+    }
+  }
   properties: {
     sku: {
       name: sku
@@ -362,16 +375,8 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-03-01' =
         }
       }
     ]
-    frontendIPConfigurations: [
-      {
-        name: frontendIpConfigurationName
-        properties: {
-          publicIPAddress: {
-            id: publicIpAddress.id
-          }
-        }
-      }
-    ]
+    frontendIPConfigurations: frontendIPConfigurations
+
     frontendPorts: [for frontEndPort in frontEndPorts: {
       name: frontEndPort.name
       properties: {
@@ -407,12 +412,20 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-03-01' =
         keyVaultSecretId: '${reference(trustedRootCertificate.keyVaultResourceId, '2021-10-01').vaultUri}secrets/${trustedRootCertificate.secretName}'
       }
     }]
-    sslCertificates: [for sslCertificate in sslCertificates: {
-      name: sslCertificate.name
+    // sslCertificates: [for sslCertificate in sslCertificates: {
+    //   name: sslCertificate.name
+    //   properties: {
+    //     keyVaultSecretId: '${reference(sslCertificate.keyVaultResourceId, '2021-10-01').vaultUri}secrets/${sslCertificate.secretName}'
+    //   }
+    // }]
+    /*sslCertificates: {
+      name: "Shared-App-Gateway-Certificate"
       properties: {
-        keyVaultSecretId: '${reference(sslCertificate.keyVaultResourceId, '2021-10-01').vaultUri}secrets/${sslCertificate.secretName}'
-      }
-    }]
+        keyVaultSecretId: '${module.keyvault.outputs.uri}/secrets/Shared-App-Gateway-Certificate/'
+       // 'https://pft01-edc-dib-cloud-kv01.vault.azure.net:443/secrets/App-Gateway-APIM-SSL-Decryption-Certificate/'
+      }    
+    },*/
+    sslCertificates: sslCertificates
     sslPolicy: sslPolicy
     backendHttpSettingsCollection: [for backendHttpSetting in backendHttpSettings: {
       name: backendHttpSetting.name
@@ -423,14 +436,18 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-03-01' =
         affinityCookieName: contains(backendHttpSetting, 'affinityCookieName') ? backendHttpSetting.affinityCookieName : null
         requestTimeout: backendHttpSetting.requestTimeout
         connectionDraining: backendHttpSetting.connectionDraining
+        probe: null
+        /*
+        
         probe: contains(backendHttpSetting, 'probeName') ? {
           id: az.resourceId('Microsoft.Network/applicationGateways/probes', name, backendHttpSetting.probeName)
-        } : null
-        trustedRootCertificates: contains(backendHttpSetting, 'trustedRootCertificate') ? [
+        } : null*/
+        trustedRootCertificates: []
+        /*trustedRootCertificates: contains(backendHttpSetting, 'trustedRootCertificate') ? [
           {
             id: az.resourceId('Microsoft.Network/applicationGateways/trustedRootCertificates', name, backendHttpSetting.trustedRootCertificate)
           }
-        ] : []
+        ] : []*/
         hostName: contains(backendHttpSetting, 'hostName') ? backendHttpSetting.hostName : null
         pickHostNameFromBackendAddress: contains(backendHttpSetting, 'pickHostNameFromBackendAddress') ? backendHttpSetting.pickHostNameFromBackendAddress : false
       }
@@ -439,41 +456,29 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-03-01' =
       name: httpListener.name
       properties: {
         frontendIPConfiguration: {
-          id: az.resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', name, frontendIpConfigurationName)
+          id: az.resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', name, 'agw-frontend-Private-IP')
         }
         frontendPort: {
-          id: az.resourceId('Microsoft.Network/applicationGateways/frontendPorts', name, httpListener.frontEndPort)
+          id: az.resourceId('Microsoft.Network/applicationGateways/frontendPorts', name, httpListener.name)
         }
         protocol: httpListener.protocol
-        sslCertificate: contains(httpListener, 'sslCertificate') ? {
-          id: az.resourceId('Microsoft.Network/applicationGateways/sslCertificates', name, httpListener.sslCertificate)
-        } : null
-        hostNames: contains(httpListener, 'hostNames') ? httpListener.hostNames : null
-        hostName: contains(httpListener, 'hostName') ? httpListener.hostName : null
-        requireServerNameIndication: contains(httpListener, 'requireServerNameIndication') ? httpListener.requireServerNameIndication : false
-        firewallPolicy: contains(httpListener, 'firewallPolicyId') ? {
-          id: httpListener.firewallPolicyId
-        } : !empty(firewallPolicyId) ? {
-          id: firewallPolicyId
-        } : null
+        //sslCertificate: null
+        sslCertificate: {
+          id: az.resourceId('Microsoft.Network/applicationGateways/sslCertificates', name, 'Shared-App-Gateway-Certificate')
+        }
+        hostName: httpListener.hostName
+        requireServerNameIndication: false
+        firewallPolicy: null
       }
     }]
     requestRoutingRules: [for rule in requestRoutingRules: {
       name: rule.name
       properties: {
         ruleType: rule.ruleType
-        httpListener: contains(rule, 'httpListener') ? {
-          id: az.resourceId('Microsoft.Network/applicationGateways/httpListeners', name, rule.httpListener)
-        } : null
-        backendAddressPool: contains(rule, 'backendAddressPool') ? {
-          id: az.resourceId('Microsoft.Network/applicationGateways/backendAddressPools', name, rule.backendAddressPool)
-        } : null
-        backendHttpSettings: contains(rule, 'backendHttpSettings') ? {
-          id: az.resourceId('Microsoft.Network/applicationGateways/backendHttpSettingsCollection', name, rule.backendHttpSettings)
-        } : null
-        redirectConfiguration: contains(rule, 'redirectConfiguration') ? {
-          id: az.resourceId('Microsoft.Network/applicationGateways/redirectConfigurations', name, rule.redirectConfiguration)
-        } : null
+        httpListener: rule.httpListener
+        backendAddressPool: rule.backendAddressPool
+        backendHttpSettings: rule.backendHttpSettings
+        redirectConfiguration: null
       }
     }]
     redirectConfigurations: [for redirectConfiguration in redirectConfigurations: {
@@ -481,16 +486,15 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-03-01' =
       properties: {
         redirectType: redirectConfiguration.redirectType
         targetUrl: redirectConfiguration.targetUrl
-        targetListener: contains(redirectConfiguration, 'targetListener') ? {
-          id: az.resourceId('Microsoft.Network/applicationGateways/httpListeners', name, redirectConfiguration.targetListener)
-        } : null
+        targetListener: null
         includePath: redirectConfiguration.includePath
         includeQueryString: redirectConfiguration.includeQueryString
-        requestRoutingRules: [
+        requestRoutingRules: []
+        /*requestRoutingRules: [
           {
             id: az.resourceId('Microsoft.Network/applicationGateways/requestRoutingRules', name, redirectConfiguration.requestRoutingRule)
           }
-        ]
+        ]*/
       }
     }]
   }
