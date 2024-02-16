@@ -11,7 +11,7 @@ param sku string
 param Zones array
 param autoScaleMinCapacity int
 param autoScaleMaxCapacity int
-
+//param publicIpAddressName string
 param frontendIPConfigurations array
 param subnetResourceId string
 
@@ -70,6 +70,7 @@ module appgw '../modules/network/application-gateway/main.bicep' = {
     backendAddressPools: backendAddressPools
     backendHttpSettings: backendHttpSettings
     requestRoutingRules: requestRoutingRules
+    //publicIpAddressName: publicIpAddressName
     subnetResourceId: subnetResourceId
     probes: probes
     sslCertificates: [
