@@ -82,7 +82,7 @@
                 }
             ]
         },
-        "sslCertificates": {
+        /* "sslCertificates": {
             "value": [
                 // {
                 //    /* "name": "App-Gateway-APIM-SSL-Decryption-Certificate",
@@ -90,7 +90,7 @@
                 //         "keyVaultSecretId": "https://pft01-edc-dib-cloud-kv01.vault.azure.net:443/secrets/App-Gateway-APIM-SSL-Decryption-Certificate/" 
                 //     }
             ]
-        },
+        },*/
         "trustedRootCertificates": {
             "value": []
         },
