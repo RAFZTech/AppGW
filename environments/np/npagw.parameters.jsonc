@@ -168,7 +168,7 @@
         },
         "requestRoutingRules": {
             "value": [
-                {
+                /*{
                     "Name": "RequestRoutingRule_1",
                     "RuleType": "Basic",
                     "httpListener": {
@@ -181,7 +181,7 @@
                     "backendHttpSettings": {
                         "id": "/subscriptions/d7c583f5-32b9-4a39-a276-ba2ec24e44d5/resourceGroups/mytestrg/providers/Microsoft.Network/applicationGateways/aue-ext-agw01/backendHttpSettingsCollection/BackendHttpSettings_80"
                     }
-                }
+                }*/
             ]
         },
         "probes": {
