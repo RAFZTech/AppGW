@@ -82,93 +82,93 @@
                 }
             ]
         },
-        /* "sslCertificates": {
-            "value": [
-                // {
-                //    /* "name": "App-Gateway-APIM-SSL-Decryption-Certificate",
-                //     "properties": {
-                //         "keyVaultSecretId": "https://pft01-edc-dib-cloud-kv01.vault.azure.net:443/secrets/App-Gateway-APIM-SSL-Decryption-Certificate/" 
-                //     }
-            ]
-        },*/
-        "trustedRootCertificates": {
-            "value": []
-        },
-        "frontEndPorts": {
+        "sslCertificates": {
             "value": [
                 {
-                    "name": "port_443",
-                    "port": 443
-                },
-                {
-                    "name": "port_80",
-                    "port": 80
-                }
-            ]
-        },
-        "backendAddressPools": {
-            "value": [
-                {
-                    "name": "BackendPool_1",
-                    "backendAddresses": [
-                        {
-                            "ipAddress": "10.109.0.4"
-                        }
-                    ]
-                }
-            ]
-        },
-        "backendHttpSettings": {
-            "value": [
-                {
-                    "name": "BackendHttpSettings_443",
-                    "Port": 443,
-                    "Protocol": "Https",
-                    "cookieBasedAffinity": "Disabled",
-                    "hostName": "",
-                    "pickHostNameFromBackendAddress": false,
-                    "requestTimeout": 180,
-                    "connectionDraining": {
-                        "drainTimeoutInSec": 180,
-                        "enabled": true
+                    "name": "app-gw-cert",
+                    "properties": {
+                        "keyVaultSecretId": "https://agw01-kv.vault.azure.net/certificates/app-gw-cert/979b17a367a841e6886ac2f30bcca070"
+                    }
+                ]
+            },
+            "trustedRootCertificates": {
+                "value": []
+            },
+            "frontEndPorts": {
+                "value": [
+                    {
+                        "name": "port_443",
+                        "port": 443
                     },
-                    /*"probe": {
+                    {
+                        "name": "port_80",
+                        "port": 80
+                    }
+                ]
+            },
+            "backendAddressPools": {
+                "value": [
+                    {
+                        "name": "BackendPool_1",
+                        "backendAddresses": [
+                            {
+                                "ipAddress": "10.109.0.4"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "backendHttpSettings": {
+                "value": [
+                    {
+                        "name": "BackendHttpSettings_443",
+                        "Port": 443,
+                        "Protocol": "Https",
+                        "cookieBasedAffinity": "Disabled",
+                        "hostName": "",
+                        "pickHostNameFromBackendAddress": false,
+                        "requestTimeout": 180,
+                        "connectionDraining": {
+                            "drainTimeoutInSec": 180,
+                            "enabled": true
+                        },
+                        /*"probe": {
                         "id": "/subscriptions/43a448ab-c2b2-4fc8-9c27-ed4e9fd05a79/resourceGroups/pft01-edc-dib-app-gateway-rg01/providers/Microsoft.Network/applicationGateways/pft01-edc-dib-agw/probes/apim-probe"
                     },*/
-                    "trustedRootCertificates": []
-                },
-                {
-                    "name": "BackendHttpSettings_80",
-                    "Port": 80,
-                    "Protocol": "Http",
-                    "cookieBasedAffinity": "Disabled",
-                    "hostName": "",
-                    "pickHostNameFromBackendAddress": false,
-                    "requestTimeout": 180,
-                    "connectionDraining": {
-                        "drainTimeoutInSec": 180,
-                        "enabled": true
+                        "trustedRootCertificates": []
                     },
-                    /*"probe": {
+                    {
+                        "name": "BackendHttpSettings_80",
+                        "Port": 80,
+                        "Protocol": "Http",
+                        "cookieBasedAffinity": "Disabled",
+                        "hostName": "",
+                        "pickHostNameFromBackendAddress": false,
+                        "requestTimeout": 180,
+                        "connectionDraining": {
+                            "drainTimeoutInSec": 180,
+                            "enabled": true
+                        },
+                        /*"probe": {
                             "id": "/subscriptions/43a448ab-c2b2-4fc8-9c27-ed4e9fd05a79/resourceGroups/pft01-edc-dib-app-gateway-rg01/providers/Microsoft.Network/applicationGateways/pft01-edc-dib-agw/probes/apim-probe"
                         },*/
-                    "trustedRootCertificates": []
-                }
-            ]
-        },
-        "httpListeners": {
-            "value": [
-                {
-                    "name": "port_80",
-                    "protocol": "Http",
-                    "frontEndPort": 80,
-                    "hostName": ""
-                }
-            ]
-        },
-        "requestRoutingRules": {
-            "value": [
-                /*{
+                        "trustedRootCertificates": []
+                    }
+                ]
+            },
+            "httpListeners": {
+                "value": [
+                    {
+                        "name": "port_80",
+                        "protocol": "Http",
+                        "frontEndPort": 80,
+                        "hostName": ""
+                    }
+                ]
+            },
+            "requestRoutingRules": {
+                "value": [
+                    /*{
                     "Name": "RequestRoutingRule_1",
                     "RuleType": "Basic",
                     "httpListener": {
@@ -182,28 +182,28 @@
                         "id": "/subscriptions/d7c583f5-32b9-4a39-a276-ba2ec24e44d5/resourceGroups/mytestrg/providers/Microsoft.Network/applicationGateways/aue-ext-agw01/backendHttpSettingsCollection/BackendHttpSettings_80"
                     }
                 }*/
-            ]
-        },
-        "probes": {
-            "value": [
-                //    /* {
-                //         "name": "apim-probe",
-                //         "properties": {
-                //             "protocol": "Https",
-                //             "path": "/status-0123456789abcdef",
-                //             "interval": 30,
-                //             "timeout": 30,
-                //             "unhealthyThreshold": 3,
-                //             "pickHostNameFromBackendHttpSettings": true,
-                //             "minServers": 0,
-                //             "match": {
-                //                 "statusCodes": [
-                //                     "200-399"
-                //                 ]
-                //             }
-                //         }
-                //     } */
-            ]
+                ]
+            },
+            "probes": {
+                "value": [
+                    //    /* {
+                    //         "name": "apim-probe",
+                    //         "properties": {
+                    //             "protocol": "Https",
+                    //             "path": "/status-0123456789abcdef",
+                    //             "interval": 30,
+                    //             "timeout": 30,
+                    //             "unhealthyThreshold": 3,
+                    //             "pickHostNameFromBackendHttpSettings": true,
+                    //             "minServers": 0,
+                    //             "match": {
+                    //                 "statusCodes": [
+                    //                     "200-399"
+                    //                 ]
+                    //             }
+                    //         }
+                    //     } */
+                ]
+            }
         }
     }
-}

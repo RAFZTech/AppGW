@@ -464,7 +464,7 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-03-01' =
         protocol: httpListener.protocol
         //sslCertificate: null
         sslCertificate: {
-          id: az.resourceId('Microsoft.Network/applicationGateways/sslCertificates', name, 'Shared-App-Gateway-Certificate')
+          id: az.resourceId('Microsoft.Network/applicationGateways/sslCertificates', name, 'app-gw-cert')
         }
         hostName: httpListener.hostName
         requireServerNameIndication: false
